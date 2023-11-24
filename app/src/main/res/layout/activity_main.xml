@@ -7,6 +7,37 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
+        <com.google.android.material.chip.ChipGroup
+            android:id="@+id/sortChipGroup"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            app:layout_constraintBottom_toTopOf="@id/searchView"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:singleSelection="true">
+
+            <!-- Chip for sorting by brand -->
+            <com.google.android.material.chip.Chip
+                android:id="@+id/sortByBrandChip"
+                style="@style/Widget.MaterialComponents.Chip.Choice"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:checkable="true"
+                android:text="Sort by Brand" />
+
+            <!-- Chip for sorting by price -->
+            <com.google.android.material.chip.Chip
+                android:id="@+id/sortByPriceChip"
+                style="@style/Widget.MaterialComponents.Chip.Choice"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:checkable="true"
+                android:text="Sort by Price" />
+
+        </com.google.android.material.chip.ChipGroup>
+
 
         <androidx.appcompat.widget.SearchView
             android:id="@+id/searchView"
@@ -19,7 +50,7 @@
             app:layout_constraintBottom_toTopOf="@+id/movieSuggestionLV"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/sortChipGroup"
             app:queryHint="search here" />
 
         <include

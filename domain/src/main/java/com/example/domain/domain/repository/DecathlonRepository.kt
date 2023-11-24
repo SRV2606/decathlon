@@ -1,6 +1,7 @@
 package com.example.domain.domain.repository
 
 import com.example.domain.domain.models.DecathlonSKUItemBean
+import com.example.domain.domain.models.ListSorters
 import com.example.domain.models.ClientResult
 
 interface DecathlonRepository {
@@ -15,7 +16,7 @@ interface DecathlonRepository {
 
     suspend fun getSortedSKUItems(
         page: Int,
-        sortBy: String
+        sort: ListSorters
     ): ClientResult<List<DecathlonSKUItemBean>>
 
     suspend fun getFilteredSKUItems(

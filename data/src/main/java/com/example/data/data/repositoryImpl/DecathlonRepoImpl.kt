@@ -4,6 +4,7 @@ import com.example.data.data.mappers.DecathlonSKUMapper
 import com.example.data.data.service.ApiService
 import com.example.data.utlils.safeApiCall
 import com.example.domain.domain.models.DecathlonSKUItemBean
+import com.example.domain.domain.models.ListSorters
 import com.example.domain.domain.repository.DecathlonRepository
 import com.example.domain.models.ClientResult
 import kotlinx.coroutines.Dispatchers
@@ -30,11 +31,11 @@ class DecathlonRepoImpl @Inject constructor(
 
     override suspend fun getSortedSKUItems(
         page: Int,
-        sortBy: String
+        sort: ListSorters
     ): ClientResult<List<DecathlonSKUItemBean>> {
         return withContext(Dispatchers.IO) {
-            return@withContext mapper.toSkuItem(true, safeApiCall {
-                service.getHeroProducts(page = page, sortBy = sortBy)
+            return@withContext mapper.toSortedSkuItems(true, sort, safeApiCall {
+                service.getHeroProducts(page = page, sortBy = sort.sortByValue)
             })
 
         }
@@ -45,7 +46,7 @@ class DecathlonRepoImpl @Inject constructor(
         searchQuery: String
     ): ClientResult<List<DecathlonSKUItemBean>> {
         return withContext(Dispatchers.IO) {
-            return@withContext mapper.toSkuItem(true, safeApiCall {
+            return@withContext mapper.toFilteredSkuItem(true, searchQuery, safeApiCall {
                 service.getHeroProducts(page = page, query = searchQuery)
             })
         }

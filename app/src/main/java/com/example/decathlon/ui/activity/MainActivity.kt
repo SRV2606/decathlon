@@ -13,6 +13,7 @@ import com.example.decathlon.databinding.ActivityMainBinding
 import com.example.decathlon.ui.adapters.SkuItemsListAdapter
 import com.example.decathlon.viewmodel.MainViewModel
 import com.example.domain.domain.models.DecathlonSKUItemBean
+import com.example.domain.domain.models.ListSorters
 import com.example.domain.models.ClientResult
 import dagger.hilt.android.AndroidEntryPoint
 import ru.alexbykov.nopaginate.callback.OnLoadMoreListener
@@ -31,6 +32,8 @@ class MainActivity : BaseActivity<ActivityMainBinding>(R.layout.activity_main), 
     private var totalResults: Int? = 0
     private var searchQuery = ""
     private var skuList: MutableList<DecathlonSKUItemBean> = mutableListOf()
+
+    private var currentSelectedChip = ListSorters.NOTHING
 
     @Inject
     lateinit var networkUtil: NetworkUtil
@@ -90,6 +93,7 @@ class MainActivity : BaseActivity<ActivityMainBinding>(R.layout.activity_main), 
         binding.listRV.adapter = skuAdapter
         paginate = NoPaginate.with(binding.listRV)
             .setLoadingTriggerThreshold(1)
+            .setOnLoadMoreListener(this)
             .build()
     }
 
@@ -141,12 +145,12 @@ class MainActivity : BaseActivity<ActivityMainBinding>(R.layout.activity_main), 
         if (clientResult.isEmpty()) {
             renderNoMovieFoundScreen()
         } else {
-            //if something from prev search is still relevent
-//            if (skuList.isNotEmpty()) {
-//                skuList.filter { searchBean ->
-//                    searchBean.name.contains(searchQuery)
-//                }
-//            }
+//            if something from prev search is still relevent
+            if (skuList.isNotEmpty() && searchQuery.isNotEmpty()) {
+                skuList.filter { searchBean ->
+                    searchBean.name.contains(searchQuery)
+                }
+            }
             clientResult.forEachIndexed { index, search ->
                 skuList.add(search)
             }
@@ -155,7 +159,33 @@ class MainActivity : BaseActivity<ActivityMainBinding>(R.layout.activity_main), 
     }
 
     override fun setListener() {
+        binding.sortByBrandChip.setOnCheckedChangeListener { compoundButton, isChecked ->
+            if (isChecked) {
+                skuList.clear()
+                page = 1
+                currentSelectedChip = ListSorters.BRAND
+                mainViewModel.getSortedItemsWithPagination(page, ListSorters.BRAND)
+            } else {
+                skuList.clear()
+                page = 1
+                currentSelectedChip = ListSorters.NOTHING
+                mainViewModel.getInitialHeroProductsWithPagination(page)
+            }
+        }
 
+        binding.sortByPriceChip.setOnCheckedChangeListener { compoundButton, isChecked ->
+            if (isChecked) {
+                skuList.clear()
+                page = 1
+                currentSelectedChip = ListSorters.PRICE
+                mainViewModel.getSortedItemsWithPagination(page, ListSorters.PRICE)
+            } else {
+                skuList.clear()
+                page = 1
+                currentSelectedChip = ListSorters.NOTHING
+                mainViewModel.getInitialHeroProductsWithPagination(page)
+            }
+        }
     }
 
     override fun onDestroy() {
@@ -179,6 +209,7 @@ class MainActivity : BaseActivity<ActivityMainBinding>(R.layout.activity_main), 
             val totalPages = totalResults?.div(10)?.minus(1)
             if (page >= totalPages!!) {
                 paginate.setNoMoreItems(true)
+                page = 1
                 return true
             }
         }
@@ -188,23 +219,23 @@ class MainActivity : BaseActivity<ActivityMainBinding>(R.layout.activity_main), 
     override fun onLoadMore() {
         if (!hasLoadedAllItems()) {
             page++
-            if (searchQuery.isEmpty()) {
-                //if searchQuery is totally empty then search back for the main home page results
-                mainViewModel.getInitialHeroProductsWithPagination(page)
-            } else {
-                //search for the given word at current time
+            if (searchQuery.isNotEmpty()) {
                 mainViewModel.getFilteredItemsWithPagination(searchQuery, page)
+            } else if (currentSelectedChip != ListSorters.NOTHING) {
+                mainViewModel.getSortedItemsWithPagination(page, currentSelectedChip)
+            } else {
+                mainViewModel.getInitialHeroProductsWithPagination(page)
             }
-        } else {
-            mainViewModel.getInitialHeroProductsWithPagination(page)
         }
     }
 
     private fun renderLoadingScreen(isLoading: Boolean) {
         if (isLoading) {
             binding.circularProgressView.visibility = View.VISIBLE
+            binding.listRV.visibility = View.GONE
         } else {
             binding.circularProgressView.visibility = View.GONE
+            binding.listRV.visibility = View.VISIBLE
         }
     }
 

@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.data.data.mappers.DecathlonSKUMapper
 import com.example.domain.domain.models.DecathlonSKUItemBean
+import com.example.domain.domain.models.ListSorters
 import com.example.domain.domain.usecases.GetDecathlonSkuUnitUsecase
 import com.example.domain.models.ClientResult
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -30,9 +31,6 @@ class MainViewModel @Inject constructor(
     val sortedSkuList = _sortedSkuList.asStateFlow()
 
 
-    private val _filteredSkuList: MutableStateFlow<ClientResult<List<DecathlonSKUItemBean>>> =
-        MutableStateFlow(ClientResult.InProgress)
-    val filteredSkuList = _filteredSkuList.asStateFlow()
 
 
     fun getInitialHeroProductsWithPagination(page: Int) {
@@ -44,21 +42,22 @@ class MainViewModel @Inject constructor(
     }
 
 
-    fun getSortedItemsWithPagination(page: Int, sortBy: String) {
+    fun getSortedItemsWithPagination(page: Int, sort: ListSorters) {
         viewModelScope.launch {
-            _sortedSkuList.emit(ClientResult.InProgress)
-            val response = getDecathlonSkuUnitUsecase.sortSKUItems(page = page, sortBy = sortBy)
-            _sortedSkuList.emit(response)
+            _skuList.emit(ClientResult.InProgress)
+            val response = getDecathlonSkuUnitUsecase.sortSKUItems(page = page, sort = sort)
+            _skuList.emit(response)
         }
     }
 
     fun getFilteredItemsWithPagination(searchQuery: String, page: Int) {
         viewModelScope.launch {
-            _filteredSkuList.emit(ClientResult.InProgress)
+            _skuList.emit(ClientResult.InProgress)
             val response =
                 getDecathlonSkuUnitUsecase.filterItemsBySearch(page = page, query = searchQuery)
-            _filteredSkuList.emit(response)
+            _skuList.emit(response)
         }
     }
+
 
 }
