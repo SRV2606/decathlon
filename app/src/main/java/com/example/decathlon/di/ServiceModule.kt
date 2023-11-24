@@ -1,6 +1,6 @@
 package com.example.decathlon.di
 
-import com.example.data.service.ApiService
+import com.example.data.data.service.ApiService
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import dagger.Module
@@ -16,7 +16,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 @InstallIn(SingletonComponent::class)
 class ServiceModule {
 
-    private val BASE_URL = "http://dev.frndapp.in:8080"
+    private val BASE_URL = "https://decathlon.com"
 
     @Provides
     fun provideService(@com.example.data.utlils.Retrofit retrofit: Retrofit): ApiService {

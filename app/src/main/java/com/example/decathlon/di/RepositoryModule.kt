@@ -1,7 +1,7 @@
 package com.example.decathlon.di
 
-import com.example.data.repositoryImpl.CalendarRepoImpl
-import com.example.domain.repository.CalendarRepository
+import com.example.data.data.repositoryImpl.DecathlonRepoImpl
+import com.example.domain.domain.repository.DecathlonRepository
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
@@ -14,6 +14,6 @@ abstract class RepositoryModule {
 
 
     @Binds
-    abstract fun bindCalendarRepo(calendarRepositoryImpl: CalendarRepoImpl): CalendarRepository
+    abstract fun bindDecathlonRepo(decathlonRepoImpl: DecathlonRepoImpl): DecathlonRepository
 
 }

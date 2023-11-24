@@ -56,6 +56,8 @@ android {
 dependencies {
     implementation project(':data')
     implementation project(':domain')
+    implementation project(':libraryPagination')
+
     implementation "androidx.core:core-ktx:1.10.1"
     implementation "androidx.appcompat:appcompat:1.6.1"
     implementation "com.google.android.material:material:1.9.0"
@@ -114,5 +116,6 @@ dependencies {
     implementation "androidx.compose.foundation:foundation:1.0.5"
     implementation "androidx.activity:activity-compose:1.3.1"
 
-
+    //pagination
+    implementation 'com.github.jakob-grabner:Circle-Progress-View:1.4'
 }

@@ -1,6 +1,6 @@
 package com.example.decathlon.di
 
-import com.example.data.mappers.CalendarMapper
+import com.example.data.data.mappers.DecathlonSKUMapper
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -13,7 +13,7 @@ class AppModule {
 
     @Provides
     @Singleton
-    fun provideCalendarMapper(): CalendarMapper {
-        return CalendarMapper()
+    fun provideSkuItemMapper(): DecathlonSKUMapper {
+        return DecathlonSKUMapper()
     }
 }

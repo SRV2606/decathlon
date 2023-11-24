@@ -1,97 +1,64 @@
-package com.example.calendar.viewmodel
+package com.example.decathlon.viewmodel
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.data.mappers.CalendarMapper
-import com.example.domain.models.ApiError
-import com.example.domain.models.CalendarDay
+import com.example.data.data.mappers.DecathlonSKUMapper
+import com.example.domain.domain.models.DecathlonSKUItemBean
+import com.example.domain.domain.usecases.GetDecathlonSkuUnitUsecase
 import com.example.domain.models.ClientResult
-import com.example.domain.repository.CalendarRepository
-import com.example.domain.usecases.GetCalendarUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import java.util.Calendar
 import javax.inject.Inject
 
 
 @HiltViewModel
 class MainViewModel @Inject constructor(
-    private val getCalendarUseCase: GetCalendarUseCase,
-    private val calendarMapper: CalendarMapper
+    private val getDecathlonSkuUnitUsecase: GetDecathlonSkuUnitUsecase,
+    private val decathlonSKUMapper: DecathlonSKUMapper
 ) : ViewModel() {
 
-    private val _calendarDaysLiveData: MutableLiveData<List<CalendarDay>> = MutableLiveData()
-    val calendarDaysLiveData: LiveData<List<CalendarDay>> get() = _calendarDaysLiveData
 
-    private val _storeTask: MutableStateFlow<ClientResult<Unit>> =
+    private val _skuList: MutableStateFlow<ClientResult<List<DecathlonSKUItemBean>>> =
         MutableStateFlow(ClientResult.InProgress)
-    val storeTask = _storeTask.asStateFlow()
+    val skuList = _skuList.asStateFlow()
 
-    fun fetchCalendarData(selectedYear: Int, selectedMonth: Int) {
-        val calendarDaysList = calculateCalendarDays(selectedYear, selectedMonth)
-        _calendarDaysLiveData.value = calendarDaysList
-    }
 
-    private fun calculateCalendarDays(year: Int, month: Int): List<CalendarDay> {
-        val calendar = Calendar.getInstance()
-        calendar.set(year, month, 1)
+    private val _sortedSkuList: MutableStateFlow<ClientResult<List<DecathlonSKUItemBean>>> =
+        MutableStateFlow(ClientResult.InProgress)
+    val sortedSkuList = _sortedSkuList.asStateFlow()
 
-        val daysInMonth = calendar.getActualMaximum(Calendar.DAY_OF_MONTH)
-        val firstDayOfMonth = calendar.get(Calendar.DAY_OF_WEEK)
 
-        val calendarDaysList = mutableListOf<CalendarDay>()
+    private val _filteredSkuList: MutableStateFlow<ClientResult<List<DecathlonSKUItemBean>>> =
+        MutableStateFlow(ClientResult.InProgress)
+    val filteredSkuList = _filteredSkuList.asStateFlow()
 
-        val daysFromPrevMonth =
-            (firstDayOfMonth - Calendar.SUNDAY + 7) % 7
 
-        calendar.add(Calendar.DAY_OF_MONTH, -daysFromPrevMonth)
-        for (i in 1..daysFromPrevMonth) {
-            val date = calendar.time
-            calendarDaysList.add(CalendarDay(date = date, tasksCount = 0, isCurrentMonth = false))
-            calendar.add(Calendar.DAY_OF_MONTH, 1)
-        }
-
-        for (i in 1..daysInMonth) {
-            val date = calendar.time
-            calendarDaysList.add(CalendarDay(date = date, tasksCount = 0, isCurrentMonth = true))
-            calendar.add(Calendar.DAY_OF_MONTH, 1)
-        }
-
-        val daysFromNextMonth = 35 - calendarDaysList.size
-
-        for (i in 1..daysFromNextMonth) {
-            val date = calendar.time
-            calendarDaysList.add(CalendarDay(date = date, tasksCount = 0, isCurrentMonth = false))
-            calendar.add(Calendar.DAY_OF_MONTH, 1)
-        }
-
-        return calendarDaysList
-    }
-
-    fun storeCalendarTask(calendarDay: CalendarDay, title: String, description: String) {
+    fun getInitialHeroProductsWithPagination(page: Int) {
         viewModelScope.launch {
-            val taskBean = calendarMapper.toTaskBean(calendarDay, title, description)
-
-            when (val req = getCalendarUseCase.storeCalendarTask(
-                userID = CalendarRepository.USER_ID,
-                taskBean
-            )) {
-                is ClientResult.Success -> {
-                    req.data.let {
-                        _storeTask.emit(ClientResult.Success(req.data))
-                    }
-                }
-
-                else -> {
-                    _storeTask.emit(ClientResult.Error(ApiError("Failed")))
-                }
-            }
+            _skuList.emit(ClientResult.InProgress)
+            val response = getDecathlonSkuUnitUsecase.getInitialSKUItems(page)
+            _skuList.emit(response)
         }
     }
 
+
+    fun getSortedItemsWithPagination(page: Int, sortBy: String) {
+        viewModelScope.launch {
+            _sortedSkuList.emit(ClientResult.InProgress)
+            val response = getDecathlonSkuUnitUsecase.sortSKUItems(page = page, sortBy = sortBy)
+            _sortedSkuList.emit(response)
+        }
+    }
+
+    fun getFilteredItemsWithPagination(searchQuery: String, page: Int) {
+        viewModelScope.launch {
+            _filteredSkuList.emit(ClientResult.InProgress)
+            val response =
+                getDecathlonSkuUnitUsecase.filterItemsBySearch(page = page, query = searchQuery)
+            _filteredSkuList.emit(response)
+        }
+    }
 
 }
