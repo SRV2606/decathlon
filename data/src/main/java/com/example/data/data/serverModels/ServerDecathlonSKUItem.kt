@@ -2,6 +2,7 @@ package com.example.data.data.serverModels
 
 import com.google.gson.annotations.SerializedName
 
+//Server Driven Model class
 data class ServerDecathlonSKUItem(
     @SerializedName("name")
     val name: String,

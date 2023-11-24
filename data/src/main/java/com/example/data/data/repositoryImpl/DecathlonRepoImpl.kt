@@ -16,10 +16,8 @@ class DecathlonRepoImpl @Inject constructor(
     private val mapper: DecathlonSKUMapper
 ) : DecathlonRepository {
 
-    companion object {
 
-    }
-
+    //fun to get Hero Products Initially , to load on Home
     override suspend fun getTopHeroProductsInitially(page: Int): ClientResult<List<DecathlonSKUItemBean>> {
         return withContext(Dispatchers.IO) {
             return@withContext mapper.toSkuItem(true, safeApiCall {
@@ -29,6 +27,7 @@ class DecathlonRepoImpl @Inject constructor(
         }
     }
 
+    //function to get Hero Products by sorting , clicking on chips
     override suspend fun getSortedSKUItems(
         page: Int,
         sort: ListSorters
@@ -41,6 +40,8 @@ class DecathlonRepoImpl @Inject constructor(
         }
     }
 
+
+    //function to get Product via search query by user
     override suspend fun getFilteredSKUItems(
         page: Int,
         searchQuery: String

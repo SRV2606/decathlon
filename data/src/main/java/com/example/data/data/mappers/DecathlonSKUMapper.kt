@@ -7,6 +7,10 @@ import com.example.domain.models.ClientResult
 import javax.inject.Inject
 
 class DecathlonSKUMapper @Inject constructor() {
+
+
+    //mapper to convert ServerData to Apps bean model class with requred data
+    //[isDummyTrue]  var is for local impl as we dont have an api live yet
     fun toSkuItem(
         isDummyTrue: Boolean,
         serverResponse: ClientResult<List<ServerDecathlonSKUItem>>
@@ -53,6 +57,9 @@ class DecathlonSKUMapper @Inject constructor() {
         }
     }
 
+    //mapper to coverted filtered List via search to required app bean class
+    //[isDummyTrue]  var is for local impl as we dont have an api live yet
+    //local logic for coversion is there , as we dont have live api
     fun toFilteredSkuItem(
         isDummyTrue: Boolean,
         searchQuery: String,
@@ -102,6 +109,9 @@ class DecathlonSKUMapper @Inject constructor() {
         }
     }
 
+    //mapper to coverted sorted list   via chip selection to required app bean class
+    //[isDummyTrue]  var is for local impl as we dont have an api live yet
+    //local logic for coversion is there , as we dont have live api
     fun toSortedSkuItems(
         isDummyTrue: Boolean,
         sortedBy: ListSorters,
@@ -163,6 +173,7 @@ class DecathlonSKUMapper @Inject constructor() {
     }
 
 
+    //local dummy data
     fun toLocalList() = run {
         return@run listOf(
             ServerDecathlonSKUItem(
@@ -664,6 +675,7 @@ class DecathlonSKUMapper @Inject constructor() {
 }
 
 
+//local dummy data
 fun toLocalList1(): List<ServerDecathlonSKUItem> {
     return listOf(
         // Common items

@@ -8,6 +8,7 @@ import retrofit2.http.Query
 interface ApiService {
 
 
+    //single api for list of product sku,with different query params
     @GET("/api/hero_products")
     suspend fun getHeroProducts(
         @Query("search_query") query: String? = null,
